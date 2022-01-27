@@ -1,5 +1,5 @@
 from django.core import paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, resolve_url
 from django.contrib.auth.decorators import login_required
 from .models import Expense, Category
 from django.contrib import messages
@@ -10,6 +10,10 @@ from userpreferences.models import UserPreference
 import datetime
 import csv
 import  xlwt
+import tempfile
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.db.models import Sum
 
 
 @login_required(login_url='/authentication/login')
@@ -166,10 +170,24 @@ def export_excel(request):
     wb.save(response)
     
     return response
-https://github.com/JIMMUGUNA789/Django_expense_tracker.git
-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
 
-def export_pdf(request, response):
+
+def export_pdf(request):
+    response = HttpResponse(content_type = 'application/pdf')
+    response['Content-Disposition'] = 'inline; attachment; filename=Expenses'+ str(datetime.datetime.now()) +'.pdf'
+    response['Content-Transfer-Encoding'] = 'binary'
+    expenses = Expense.objects.filter(user=request.user)
+    sum = expenses.aggregate(Sum('amount'))
+    html_string = render_to_string('expenses/pdf-output.html', {'expenses':expenses ,'total':sum['amount-sum']})
+    html = HTML(string=html_string)
+    result = html.write_pdf()
+    #store pdf in mem while rendering it
+    with tempfile.NamedTemporaryFile(delete=True) as output:
+        output.write(result)
+        output.flush()
+        output=open(output.name, 'rb')
+        response.write(output.read())
+    
     
     return response
     

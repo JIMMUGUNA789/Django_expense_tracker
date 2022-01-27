@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pdf Output
+
+    </title>
+    <style>
+        
+        @page{
+            size: A4;
+            margin: 2.5cm 1.5cm 3.5cm 1.5cm;
+            @top-center{
+                content: "Company Name";
+            }
+            @bottom-right{
+                content: "Page" counter(page) "of" counter(pages);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <h2>Expense Lsit</h2>
+    <table class="table">
+        <thead class="thead">
+            <tr>
+                <th>No</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in espenses %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{expense.date}}</td>
+                <td>{{expense.category}}</td>
+                <td>{{expense.amount}}</td>
+                <td>{{expense.description}}</td>
+            </tr>
+
+            {% endfor %}
+            <tr>
+                <td>Total</td>
+                <td>{{total}}</td>
+                
+            </tr>
+
+        </tbody>
+    </table>
+    
+</body>
+</html>
